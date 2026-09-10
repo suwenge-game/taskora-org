@@ -1,7 +1,7 @@
 // Per-site build entry. Usage: node tools/build-kit/build.mjs <site-key> [--out DIR]
 // Reads the site directory in place, applies transforms, writes to --out
 // (default: <site>/_dist). The _dist dir is what gets deployed.
-import { readdirSync, statSync, readFileSync, writeFileSync, mkdirSync, cpSync, rmSync, existsSync } from 'node:fs';
+import { readdirSync, statSync, readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { join, relative, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SITES } from './config.mjs';
@@ -36,3 +36,65 @@ function walk(dir, acc = []) {
   return acc;
 }
 const files = walk(srcDir);
+
+// ---- pass 1: read all html/css/js, build class map if configured ----
+const htmlFiles = files.filter((f) => /\.html?$/.test(f));
+const cssFiles = files.filter((f) => /\.css$/.test(f));
+const jsFiles = files.filter((f) => /\.js$/.test(f));
+
+let classMap = null;
+if (site.classPrefix) {
+  const htmlTexts = htmlFiles.map((f) => readFileSync(f, 'utf8'));
+  const cssTexts = cssFiles.map((f) => readFileSync(f, 'utf8'));
+  const jsTexts = jsFiles.map((f) => readFileSync(f, 'utf8'));
+  classMap = buildClassMap(site.classPrefix, cssTexts, htmlTexts, jsTexts);
+  console.log(`class map: ${classMap.size} classes -> prefix "${site.classPrefix}"`);
+}
+
+// ---- pass 2: transform + write ----
+mkdirSync(outDir, { recursive: true });
+const report = { pages: 0, adsRemoved: 0, thin: [] };
+
+for (const f of files) {
+  const rel = relative(srcDir, f);
+  const dest = join(outDir, rel);
+  mkdirSync(dirname(dest), { recursive: true });
+  const ext = extname(f);
+
+  if (ext === '.html' || ext === '.htm') {
+    let html = readFileSync(f, 'utf8');
+    const relPosix = '/' + rel.replace(/\\/g, '/').replace(/(^|\/)index\.html?$/, '$1');
+    const content = isContentPage(relPosix.replace(/index\.html?$/i, 'index.html'));
+
+    if (classMap) html = obfuscateHtmlClasses(html, classMap);
+    html = transformHead(html, { isContentPage: content });
+    if (!content) {
+      const r = stripAdUnits(html);
+      html = r.html;
+      report.adsRemoved += r.adsRemoved;
+    }
+    // density check on content pages
+    if (content) {
+      const { zh, en } = nativeTextStats(html);
+      const needZh = site.lang.startsWith('zh') ? 800 : Infinity;
+      const needEn = site.lang.startsWith('zh') ? Infinity : 600;
+      if (zh < Math.min(needZh, 400) && en < Math.min(needEn, 250)) {
+        report.thin.push({ page: rel, zh, en });
+      }
+    }
+    writeFileSync(dest, finalize(html));
+    report.pages++;
+  } else if (classMap && (ext === '.css' || ext === '.js')) {
+    let text = readFileSync(f, 'utf8');
+    text = ext === '.css' ? obfuscateCss(text, classMap) : obfuscateJsClasses(text, classMap);
+    writeFileSync(dest, text);
+  } else {
+    cpSync(f, dest);
+  }
+}
+
+console.log(`built ${siteKey}: ${report.pages} pages, ${report.adsRemoved} ad units stripped from non-content pages`);
+if (report.thin.length) {
+  console.log(`THIN (${report.thin.length}):`);
+  for (const t of report.thin) console.log(`  ${t.page} zh=${t.zh} en=${t.en}`);
+}
