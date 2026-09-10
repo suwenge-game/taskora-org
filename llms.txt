@@ -1,0 +1,29 @@
+# Numble Daily
+
+> An English-language daily math equation puzzle with an original browser engine, deterministic daily challenge, practice play, and six-character Mini mode.
+
+## Primary page
+
+- [Daily Math Equation Puzzle](https://taskora.org/): Play an eight-character equation guessing game with six attempts, duplicate-aware green/gold/gray feedback, calculator keyboard, and local statistics.
+
+## Content pages
+
+- [Daily puzzle](https://taskora.org/daily/): The date-seeded daily equation and yesterday's answer.
+- [Rules](https://taskora.org/rules/): Valid syntax, whole-number division, precedence, colors, and win conditions.
+- [Strategies](https://taskora.org/strategies/): Operator probes, digit coverage, result-width estimation, and reverse solving.
+- [Scoring](https://taskora.org/scoring/): Wins, daily streaks, time, and separate local Classic/Mini top tens.
+- [Generator](https://taskora.org/research/): How candidates are constructed, checked, and selected from a deterministic seed.
+- [Practice](https://taskora.org/printable/): Mental equation-building drills.
+- [Equation Puzzle Basics](https://taskora.org/equation-basics/): Eight-character equation anatomy, legal guesses, operator precedence, opening construction, and color-feedback deduction.
+- [Mini Mode](https://taskora.org/mini-mode/): How six-character speed puzzles differ from Classic play, with compact-board tactics and an alternating practice plan.
+- [Digit and Operator Frequency](https://taskora.org/number-frequency/): General digit, operator, and equation-shape patterns for more informative guesses without unsupported percentages.
+- [Pencil Notes and Annotation Strategy](https://taskora.org/pencil-notes/): A practical system for tracking candidate operators, digit exclusions, duplicate limits, locked positions, and remaining equation shapes.
+- [About](https://taskora.org/about/), [Editorial policy](https://taskora.org/editorial-policy/), [Privacy](https://taskora.org/privacy/), [Terms](https://taskora.org/terms/), and [Contact](https://taskora.org/contact/).
+
+## Key facts
+
+- The original generator guarantees a mathematically valid equation and applies correct operator precedence.
+- Daily mode uses the local date as a deterministic seed, so the day's answer is stable on refresh.
+- Classic mode uses eight characters; Mini mode uses six; both allow six valid guesses.
+- A submission is accepted only if both sides are equal, division is exact, syntax is legal, and there are no leading zeros.
+- Game statistics stay in browser localStorage and are not uploaded.

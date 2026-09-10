@@ -1,0 +1,28 @@
+:root{--ink:#17201f;--muted:#61706d;--green:#0f766e;--green-dark:#0a5b55;--lime:#a3e635;--paper:#f3f6f2;--line:#cad4d0;--yellow:#c89624;--gray:#55615f}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#eef2ef;color:var(--ink);font-family:Arial,"Helvetica Neue",sans-serif;line-height:1.65}a{color:var(--green);text-underline-offset:3px}.skip{position:absolute;left:-9999px}.skip:focus{left:1rem;top:1rem;background:#fff;padding:.6rem;z-index:10}.site-nav{border-bottom:1px solid #dce3df;background:rgba(238,242,239,.94);position:sticky;top:0;z-index:5}.nav-inner{max-width:1080px;margin:auto;padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}.brand{font-weight:900;color:var(--ink);text-decoration:none;letter-spacing:-.04em}.brand i{color:var(--green);font-style:normal}.nav-links{display:flex;gap:1rem;flex-wrap:wrap}.nav-links a{font-size:.9rem;font-weight:700;text-decoration:none}.hero{max-width:1080px;margin:auto;padding:clamp(2rem,6vw,5rem) 1.2rem 2.5rem;display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(2rem,5vw,5rem);align-items:center}.eyebrow{text-transform:uppercase;letter-spacing:.15em;color:var(--green);font-size:.75rem;font-weight:900}.hero h1{font-size:clamp(2.8rem,7vw,5.8rem);letter-spacing:-.07em;line-height:.88;margin:.5rem 0 1.2rem;max-width:9ch}.hero-copy>p{color:var(--muted);font-size:1.08rem;max-width:34rem}.hero-tags{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.5rem}.hero-tags span{border:1px solid var(--line);padding:.35rem .65rem;font-size:.78rem;font-weight:800;background:#fff}.game-shell{background:#17201f;color:#f4f7f5;padding:clamp(1rem,3vw,2rem);box-shadow:18px 18px 0 #a3e635;border:1px solid #25312e}.ng-top{display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap}.ng-modes{display:flex;gap:.35rem}.ng-modes button,.ng-keyboard button{font:inherit;font-weight:800;border:0;cursor:pointer}.ng-modes button{background:#2a3734;color:#dce6e2;padding:.55rem .75rem}.ng-modes button.active{background:var(--lime);color:#17201f}.ng-meta{display:flex;gap:1rem;font-variant-numeric:tabular-nums;font-size:.85rem;color:#bdc9c5}.ng-board{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:.4rem;max-width:510px;margin:1.4rem auto}.ng-tile{aspect-ratio:1;display:grid;place-items:center;border:2px solid #52605c;font-size:clamp(1rem,4vw,1.75rem);font-weight:900}.ng-tile.filled{border-color:#87938f}.correct{background:var(--green)!important;color:#fff!important;border-color:var(--green)!important}.present{background:var(--yellow)!important;color:#fff!important;border-color:var(--yellow)!important}.absent{background:var(--gray)!important;color:#fff!important;border-color:var(--gray)!important}.ng-message{text-align:center;min-height:1.7rem;font-size:.9rem;color:#c8d3cf}.ng-message.error{color:#ffaaa3}.ng-keyboard{max-width:360px;margin:auto}.ng-keyboard>div{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.4rem}.ng-keyboard button{min-height:2.9rem;background:#dce4e0;color:#17201f}.ng-keyboard button:active,.ng-modes button:active{transform:translateY(1px)}.ng-stats{display:flex;justify-content:center;gap:1.25rem;margin-top:1.2rem;color:#bdc9c5;font-size:.75rem}.ng-stats span{text-align:center}.ng-stats b{display:block;color:#fff;font-size:1.1rem}main.content{max-width:960px;margin:4rem auto;padding:0 1.2rem}.section{border-top:1px solid var(--line);padding:3rem 0}.section h2{font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-.04em;line-height:1.05;margin:0 0 1rem}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}.grid-3 h3{font-size:1rem;text-transform:uppercase;letter-spacing:.06em}.faq details{border-top:1px solid var(--line);padding:1rem 0}.faq summary{font-weight:800;cursor:pointer}.cta{display:inline-block;background:var(--green);color:#fff;text-decoration:none;font-weight:800;padding:.75rem 1rem}.site-footer{background:#17201f;color:#b8c3bf;padding:3rem 1.2rem}.footer-inner{max-width:960px;margin:auto}.footer-links{display:flex;flex-wrap:wrap;gap:.6rem 1.1rem;margin-bottom:1rem}.footer-links a{color:#eef5f2}@media(max-width:760px){.hero{grid-template-columns:1fr}.hero h1{max-width:none}.nav-links{display:none}.game-shell{box-shadow:8px 8px 0 var(--lime)}.grid-3{grid-template-columns:1fr}.ng-tile{font-size:1rem}.ng-stats{gap:.65rem}}
+
+
+/* ad-safety v1 (do not remove) */
+/* Google ad containers must keep >=160px clearance from interactive controls,
+   >=64px from content. Applies to manual ins.adsbygoogle units and to Auto Ads
+   injected anchors/overlays (data-ad-slot parent guard). */
+ins.adsbygoogle,
+.ad-container {
+  display: block;
+  margin: 64px auto;
+  max-width: 100%;
+  overflow: hidden;
+}
+/* near interactive game controls: larger enforced clearance */
+.game-frame ~ ins.adsbygoogle, ins.adsbygoogle ~ .game-frame { margin-top: 160px !important; margin-bottom: 160px !important; }
+.rail ~ ins.adsbygoogle, ins.adsbygoogle ~ .rail { margin-top: 160px !important; margin-bottom: 160px !important; }
+.tq_66876af5 ~ ins.adsbygoogle, ins.adsbygoogle ~ .tq_66876af5 { margin-top: 160px !important; margin-bottom: 160px !important; }
+.game-shell ins.adsbygoogle,
+.game-frame ins.adsbygoogle,
+.game-wrap ins.adsbygoogle,
+main ins.adsbygoogle {
+  margin: 160px auto 200px;
+}
+/* never allow ads to overlap or pin over controls */
+ins.adsbygoogle { position: static !important; float: none !important; }
+/* Auto Ads: keep vignettes/anchors from covering fixed control bars */
+body { scroll-padding-bottom: 120px; }

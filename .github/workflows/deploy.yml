@@ -1,0 +1,74 @@
+# Build + deploy static site. Build kit runs once per site; artifact = _dist.
+# Hosting model:
+#   gh-pages sites (pipely-xyz, gamehub-city, taskora-org):
+#     Pages MUST be switched from "legacy" to "GitHub Actions" source once
+#     (Settings -> Pages -> Build and deployment -> Source: GitHub Actions).
+#     After that, this workflow is the only deploy path.
+#   cf-pages sites (game3, game1, game2):
+#     Cloudflare Pages git integration builds the repo root itself. This
+#     workflow runs the same build for verification (CI gate), pushing to
+#     main triggers CF to rebuild; CF output equals _dist because the build
+#     is deterministic. To make CF run the kit, set build command:
+#       node ../../tools/build-kit/build.mjs <site-key> --out .
+#     (path depends on CF root dir setting) — operator one-time step.
+name: Build and Deploy (https://taskora.org)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run build kit
+        run: node tools/build-kit/build.mjs "taskora-org" --out _dist
+      - name: QA gate — no ad loader on 404/legal pages
+        run: |
+          ! grep -rlF 'adsbygoogle.js?client=' _dist --include='404.html'
+          if grep -rlF 'adsbygoogle.js?client=' _dist --include='*.html' | grep -E '(privacy|terms|contact|about|editorial)'; then exit 1; else exit 0; fi
+      - name: QA gate — consent default precedes any Google script
+        run: |
+          node -e "
+          const {readFileSync, readdirSync, statSync} = require('fs');
+          const {join} = require('path');
+          let bad = [];
+          (function walk(d){ for (const n of readdirSync(d)) { const p = join(d, n);
+            if (statSync(p).isDirectory()) walk(p);
+            else if (p.endsWith('.html')) {
+              const t = readFileSync(p, 'utf8');
+              const cd = t.indexOf(\"gtag('consent','default'\");
+              const gt = t.indexOf('googletagmanager.com/gtag/js');
+              const ad = t.indexOf('pagead2.googlesyndication.com');
+              const firstGoogle = [gt, ad].filter(x => x >= 0).sort((a,b)=>a-b)[0];
+              if (firstGoogle >= 0 && (cd < 0 || cd > firstGoogle)) bad.push(p);
+            }}})('_dist');
+          if (bad.length) { console.error('consent order violation:', bad); process.exit(1); }
+          "
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _dist
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
