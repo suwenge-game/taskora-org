@@ -14,14 +14,19 @@ const kitDir = dirname(fileURLToPath(import.meta.url));
 //  b) site repo: node tools/build-kit/build.mjs <key> --out . — repo root IS the site;
 //     detected by the kit living at <cwd>/tools/build-kit.
 const cwd = process.cwd();
-const inSiteRepo = existsSync(join(cwd, 'index.html')) && kitDir === join(cwd, 'tools', 'build-kit');
+// in-site mode: cwd has index.html AND (kit is the site's own tools/build-kit
+// OR we're invoking the monorepo kit against the site dir containing cwd)
+const inSiteRepo = existsSync(join(cwd, 'index.html')) &&
+  (kitDir === join(cwd, 'tools', 'build-kit') || existsSync(join(cwd, 'tools', 'build-kit')));
 const root = inSiteRepo ? dirname(cwd) : join(kitDir, '..', '..');
 const siteKey = process.argv[2];
 const site = SITES[siteKey];
 if (!site) { console.error(`unknown site: ${siteKey}`); process.exit(1); }
 const outIdx = process.argv.indexOf('--out');
 const outArg = outIdx >= 0 ? process.argv[outIdx + 1] : null;
-const outDir = outArg ? (outArg === '.' ? cwd : outArg) : join(root, site.dir, '_dist');
+const outDir = outArg
+  ? (outArg === '.' ? (inSiteRepo ? cwd : (() => { throw new Error('--out . requires running inside the site repo (cwd must contain index.html and tools/build-kit)'); })()) : outArg)
+  : join(root, site.dir, '_dist');
 const srcDir = inSiteRepo ? cwd : join(root, site.dir);
 
 // ---- collect files ----
@@ -84,6 +89,14 @@ for (const f of files) {
     }
     writeFileSync(dest, finalize(html));
     report.pages++;
+  } else if (f === dest) {
+    // in-place build (--out .): destination IS the source — skip copying,
+    // but still apply css/js obfuscation in place when configured.
+    if (classMap && (ext === '.css' || ext === '.js')) {
+      let text = readFileSync(f, 'utf8');
+      text = ext === '.css' ? obfuscateCss(text, classMap) : obfuscateJsClasses(text, classMap);
+      writeFileSync(dest, text);
+    }
   } else if (classMap && (ext === '.css' || ext === '.js')) {
     let text = readFileSync(f, 'utf8');
     text = ext === '.css' ? obfuscateCss(text, classMap) : obfuscateJsClasses(text, classMap);
@@ -92,7 +105,6 @@ for (const f of files) {
     cpSync(f, dest);
   }
 }
-
 console.log(`built ${siteKey}: ${report.pages} pages, ${report.adsRemoved} ad units stripped from non-content pages`);
 if (report.thin.length) {
   console.log(`THIN (${report.thin.length}):`);
